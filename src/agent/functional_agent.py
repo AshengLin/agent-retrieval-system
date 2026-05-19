@@ -22,7 +22,7 @@ llm = GoogleGenAI(
 )
 
 
-async def create_agent():
+async def create_agent(system_prompt: str):
     client = BasicMCPClient("http://127.0.0.1:8000/mcp")
 
     tools = await aget_tools_from_mcp_url(
@@ -30,11 +30,6 @@ async def create_agent():
         client=client,
         allowed_tools=["movie_search_tool", "get_favorite_director", "get_watched_movies"]
     )
-
-    system_prompt = """
-    Please answer based on the information provided.
-    Do not make unfounded assumptions.
-    """
 
     agent = FunctionAgent(
         tools=tools,
@@ -49,18 +44,9 @@ async def run_agent_verbose(agent, query: str):
     async for event in handler.stream_events():
         if isinstance(event, ToolCall):
             print(f"Calling tool {event.tool_name} with args {event.tool_kwargs}...")
-            print("--------------")
+            print("--------------\n\n")
         elif isinstance(event, ToolCallResult):
             print(
                 f"Called tool {event.tool_name} with args {event.tool_kwargs}\n\nGot result: {event.tool_output}"
             )
     return await handler
-
-
-async def main():
-    agent = await create_agent()
-    response = await run_agent_verbose(agent, "Please recommend some movies by my favorite directors that I haven't seen yet.")
-    print("\n\n\nANS:", str(response))
-
-if __name__ == "__main__":
-    asyncio.run(main())
