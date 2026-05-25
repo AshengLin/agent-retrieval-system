@@ -3,7 +3,7 @@ import os
 from llama_index.core.agent.workflow import FunctionAgent, ToolCall, ToolCallResult
 from llama_index.llms.google_genai import GoogleGenAI
 from google.genai import types
-import asyncio
+from typing import List, Optional
 from llama_index.tools.mcp import BasicMCPClient, aget_tools_from_mcp_url
 
 # ===== ENV =====
@@ -22,14 +22,20 @@ llm = GoogleGenAI(
 )
 
 
-async def create_agent(system_prompt: str):
+async def create_agent(system_prompt: str, tool_list: Optional[List[str]]):
     client = BasicMCPClient("http://127.0.0.1:8000/mcp")
+
+    allowed_tools = tool_list or None  # fallback policy
 
     tools = await aget_tools_from_mcp_url(
         "http://127.0.0.1:8000/mcp",
         client=client,
-        allowed_tools=["movie_search_tool", "get_favorite_director", "get_watched_movies"]
+        allowed_tools=allowed_tools
     )
+
+    print("\nLoaded tools:")
+    for tool in tools:
+        print("-", tool.metadata.name)
 
     agent = FunctionAgent(
         tools=tools,
@@ -40,6 +46,9 @@ async def create_agent(system_prompt: str):
 
 
 async def run_agent_verbose(agent, query: str):
+    """
+    Print the current status of the agent.
+    """
     handler = agent.run(query)
     async for event in handler.stream_events():
         if isinstance(event, ToolCall):

@@ -22,9 +22,7 @@ def movie_search_tool(
 ) -> list:
     """
     Search movies using semantic query + optional filters.
-    if only filter by director:
-      query = "movies directed by <director>"
-    # """
+    """
 
     query_vector = model.encode(query).tolist()
 
