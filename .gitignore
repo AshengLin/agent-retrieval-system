@@ -3,3 +3,5 @@ src/vectordb/qdrant_data
 __pycache__/
 *.pyc
 .DS_Store
+.files/
+.chainlit/

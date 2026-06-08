@@ -45,17 +45,20 @@ async def create_agent(system_prompt: str, tool_list: Optional[List[str]]):
     return agent
 
 
-async def run_agent_verbose(agent, query: str):
+async def run_agent(agent, query: str, callback=None):
     """
-    Print the current status of the agent.
+    Run agent and optionally stream events to external handlers.
     """
     handler = agent.run(query)
     async for event in handler.stream_events():
-        if isinstance(event, ToolCall):
-            print(f"Calling tool {event.tool_name} with args {event.tool_kwargs}...")
-            print("--------------\n\n")
-        elif isinstance(event, ToolCallResult):
-            print(
-                f"Called tool {event.tool_name} with args {event.tool_kwargs}\n\nGot result: {event.tool_output}"
-            )
+        if callback is None:
+            if isinstance(event, ToolCall):
+                print(f"Calling tool {event.tool_name} with args {event.tool_kwargs}...")
+                print("--------------\n\n")
+            elif isinstance(event, ToolCallResult):
+                print(
+                    f"Called tool {event.tool_name} with args {event.tool_kwargs}\n\nGot result: {event.tool_output}"
+                )
+        else:
+            await callback(event)
     return await handler
