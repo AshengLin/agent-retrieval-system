@@ -1,11 +1,9 @@
-# chainlit run src/ui/chainlit_app.py --port 8001
+# PYTHONPATH=. chainlit run src/ui/chainlit_app.py --port 8001
 
 import sys
 from pathlib import Path
-src_root = Path(__file__).resolve().parents[1]
-sys.path.append(str(src_root))
 import chainlit as cl
-from runtime import run_query
+from src.runtime import run_query
 from llama_index.core.agent.workflow import ToolCall, ToolCallResult
 
 
@@ -19,12 +17,12 @@ async def on_message(message: cl.Message):
                 name=event.tool_name,
                 type="tool"
             )
-            await step.__aenter__()  #
+            await step.__aenter__()
             steps[event.tool_id] = step
 
             step.input = str(event.tool_kwargs)
         elif isinstance(event, ToolCallResult):
-            step = steps.get(event.tool_name)
+            step = steps.get(event.tool_id)
             if step:
                 step.output = str(event.tool_output)
                 await step.__aexit__(None, None, None)

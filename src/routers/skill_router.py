@@ -5,6 +5,7 @@ from typing import List
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from google import genai
+from pathlib import Path
 
 # ===== ENV =====
 load_dotenv()
@@ -77,7 +78,7 @@ def build_router_input(skills):
 
 
 # ===== ROUTER FUNCTION =====
-def route(query: str, skills_dir: str = "./skills") -> List[str]:
+def route(query: str, skills_dir: str = Path(__file__).resolve().parents[1] / "skills") -> List[str]:
     client = genai.Client(api_key=api_key)
 
     skills = build_router_input(load_skill_metadata(skills_dir))

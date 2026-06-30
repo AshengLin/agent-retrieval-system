@@ -1,5 +1,5 @@
 import asyncio
-from runtime import run_query
+from src.runtime import run_query
 
 
 async def main():

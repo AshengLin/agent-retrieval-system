@@ -1,4 +1,4 @@
-from routers.skill_router import load_skill_metadata
+from src.routers.skill_router import load_skill_metadata
 
 
 def resolve_required_tools(selected_skill_names, skills_dir):

@@ -1,7 +1,7 @@
-from routers.skill_router import route
-from routers.skill_loader import load_skills
-from routers.tool_resolver import resolve_required_tools
-from agent.functional_agent import create_agent, run_agent
+from src.routers.skill_router import route
+from src.routers.skill_loader import load_skills
+from src.routers.tool_resolver import resolve_required_tools
+from src.agent.functional_agent import create_agent, run_agent
 from pathlib import Path
 SKILLS_DIR = Path(__file__).parent / "skills"
 
