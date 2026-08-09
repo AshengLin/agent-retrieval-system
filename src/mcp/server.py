@@ -1,12 +1,17 @@
 # fastmcp run server.py
 from mcp.server.fastmcp import FastMCP
-from qdrant_client import QdrantClient
 from qdrant_client.models import Filter, FieldCondition, MatchValue, Range
 from sentence_transformers import SentenceTransformer
 from collections import Counter
+from qdrant_client import QdrantClient
 
 # ===== INIT=====
-client = QdrantClient(path="../vectordb/qdrant_data")
+# client = QdrantClient(path="../vectordb/qdrant_data")
+client = QdrantClient(
+    host="localhost",
+    port=6333,
+)
+
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 mcp = FastMCP("test_tools")

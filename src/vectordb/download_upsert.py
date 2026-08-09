@@ -2,10 +2,10 @@ import requests
 import time
 from dotenv import load_dotenv
 import os
-from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 from qdrant_client.models import PointStruct
 from qdrant_client.http.models import VectorParams, HnswConfigDiff, Distance
+from src.vectordb.client import get_qdrant_client
 
 # ===== ENV =====
 load_dotenv()
@@ -82,7 +82,9 @@ def build_text(movie):
 
 # ===== Qdrant Setup =====
 def init_qdrant(text_dim):
-    client = QdrantClient(path="qdrant_data")
+    # client = QdrantClient(path="qdrant_data")
+    client = get_qdrant_client()
+
     collections = [c.name for c in client.get_collections().collections]
 
     if "movies" not in collections:
@@ -117,6 +119,8 @@ if __name__ == "__main__":
                 payload=m
             )
         )
+
+    print(f"Preparing to insert {len(movies)} unique movies")
 
     # upsert
     client.upsert(

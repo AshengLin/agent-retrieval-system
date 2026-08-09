@@ -8,6 +8,20 @@ This layer is responsible for:
 - Ingesting data into the vector database (Qdrant)
 
 ---
+## run
+Start the Qdrant server:
+
+```bash
+docker compose up -d
+```
+
+Then run the ingestion pipeline:
+```
+bashpython3 -m src.vectordb.download_upsert
+```
+
+The ingestion pipeline fetches movie data from TMDb, generates embeddings, and uploads the data to the Dockerized Qdrant instance.
+
 ## Components
 
 ### TMDb Fetching
@@ -44,7 +58,8 @@ flowchart TB
     --> Transform[Build Movie Document]
     --> Text[Build Text Representation]
     --> Embed[Generate Embedding]
-    --> Qdrant[Store in Qdrant]
+    --> Ingest[Ingest into Qdrant]
+    --> Qdrant[Dockerized Qdrant]
 ```
 
 ---
@@ -52,7 +67,7 @@ flowchart TB
 - Separate data ingestion from query logic
 - Keep embedding pipeline simple and reproducible
 - Store raw metadata as payload for flexible filtering
-- Ensure idempotent ingestion (safe to re-run)
+- Make ingestion safe to re-run
 
 ---
 
@@ -61,12 +76,15 @@ flowchart TB
 - Language is currently set to en-US
 - Rate limiting is handled via time.sleep(0.2)
 - Embedding model dimension is inferred dynamically
-- Data is stored locally using Qdrant (path="qdrant_data")
+- Qdrant runs as a Docker container
+- Qdrant is accessed through localhost:6333
 
 ---
 ## Future Improvements
 - Add multi-language support (e.g., ja-JP)
-- Support batch ingestion / parallel requests
-- Move embedding + ingestion into pipeline jobs
+- Support batch ingestion / parallel API requests
+- Introduce hybrid search (dense + sparse retrieval)
+- Add payload indexes for structured filtering
+- Move embedding and ingestion into dedicated pipeline jobs
 - Introduce image embeddings for poster-based search
-- Replace local Qdrant with remote service (Docker / Cloud)
+- Evaluate retrieval quality with a dedicated evaluation pipeline
